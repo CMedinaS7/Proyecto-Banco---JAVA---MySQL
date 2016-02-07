@@ -1,0 +1,421 @@
+CREATE DATABASE  IF NOT EXISTS `mydb` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `mydb`;
+-- MySQL dump 10.13  Distrib 5.1.40, for Win32 (ia32)
+--
+-- Host: localhost    Database: mydb
+-- ------------------------------------------------------
+-- Server version	5.1.48-community
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `tipo_cliente`
+--
+
+DROP TABLE IF EXISTS `tipo_cliente`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tipo_cliente` (
+  `IdTipoCliente` char(5) NOT NULL,
+  `Descripcion` varchar(50) NOT NULL,
+  PRIMARY KEY (`IdTipoCliente`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tipo_cliente`
+--
+
+LOCK TABLES `tipo_cliente` WRITE;
+/*!40000 ALTER TABLE `tipo_cliente` DISABLE KEYS */;
+INSERT INTO `tipo_cliente` VALUES ('TC001','A'),('TC002','B'),('TC003','C'),('TC004','S');
+/*!40000 ALTER TABLE `tipo_cliente` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuario`
+--
+
+DROP TABLE IF EXISTS `usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario` (
+  `IdUsuario` char(5) NOT NULL,
+  `Numero_Tarjeta` varchar(45) NOT NULL,
+  `Clave` char(6) NOT NULL,
+  `IdTarjeta` char(5) NOT NULL,
+  `IdCliente` char(5) NOT NULL,
+  PRIMARY KEY (`IdUsuario`),
+  KEY `fk_usuario_tarjeta1` (`IdTarjeta`),
+  KEY `fk_usuario_cliente1` (`IdCliente`),
+  CONSTRAINT `fk_usuario_cliente1` FOREIGN KEY (`IdCliente`) REFERENCES `cliente` (`IdCliente`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_usuario_tarjeta1` FOREIGN KEY (`IdTarjeta`) REFERENCES `tarjeta` (`IdTarjeta`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario`
+--
+
+LOCK TABLES `usuario` WRITE;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+INSERT INTO `usuario` VALUES ('U0001','4557880209120975','050610','T0001','C0001');
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tarjeta`
+--
+
+DROP TABLE IF EXISTS `tarjeta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tarjeta` (
+  `IdTarjeta` char(5) NOT NULL,
+  `Numero_Tarjeta` varchar(45) NOT NULL,
+  `Clave_Tarjeta` char(4) NOT NULL,
+  `IdCuentaBancaria` char(5) NOT NULL,
+  `IdCliente` char(5) DEFAULT NULL,
+  PRIMARY KEY (`IdTarjeta`),
+  KEY `fk_tarjeta_cuenta_bancaria1` (`IdCuentaBancaria`),
+  CONSTRAINT `fk_tarjeta_cuenta_bancaria1` FOREIGN KEY (`IdCuentaBancaria`) REFERENCES `cuenta_bancaria` (`IdCuentaBancaria`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tarjeta`
+--
+
+LOCK TABLES `tarjeta` WRITE;
+/*!40000 ALTER TABLE `tarjeta` DISABLE KEYS */;
+INSERT INTO `tarjeta` VALUES ('T0001','4557880209120975','0506','CB001','C0001'),('T0002','4557880209120976','1234','CB002','C0002');
+/*!40000 ALTER TABLE `tarjeta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `operacion_bancaria`
+--
+
+DROP TABLE IF EXISTS `operacion_bancaria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `operacion_bancaria` (
+  `IdOperacionBancaria` char(5) NOT NULL,
+  `Fecha` date NOT NULL,
+  `Monto` double NOT NULL,
+  `Tipo` varchar(45) NOT NULL,
+  `Servicio` varchar(50) DEFAULT NULL,
+  `Cuenta` varchar(45) DEFAULT NULL,
+  `IdCliente` char(5) NOT NULL,
+  `IdCuentaBancaria` char(5) NOT NULL,
+  PRIMARY KEY (`IdOperacionBancaria`),
+  KEY `fk_operacion_bancaria_cliente1` (`IdCliente`),
+  KEY `fk_operacion_bancaria_cuenta_bancaria1` (`IdCuentaBancaria`),
+  CONSTRAINT `fk_operacion_bancaria_cliente1` FOREIGN KEY (`IdCliente`) REFERENCES `cliente` (`IdCliente`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_operacion_bancaria_cuenta_bancaria1` FOREIGN KEY (`IdCuentaBancaria`) REFERENCES `cuenta_bancaria` (`IdCuentaBancaria`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `operacion_bancaria`
+--
+
+LOCK TABLES `operacion_bancaria` WRITE;
+/*!40000 ALTER TABLE `operacion_bancaria` DISABLE KEYS */;
+INSERT INTO `operacion_bancaria` VALUES ('OB001','2012-06-28',68.7,'-','Telefono','570-19653197-0-60','C0001','CB001'),('OB002','2012-06-28',227764.73,'-','Transaccion','564-56456456-4-56','C0001','CB001'),('OB003','2012-06-28',71732.52,'-','Transaccion','454-56456456-4-65','C0001','CB001');
+/*!40000 ALTER TABLE `operacion_bancaria` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cuenta_bancaria`
+--
+
+DROP TABLE IF EXISTS `cuenta_bancaria`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cuenta_bancaria` (
+  `IdCuentaBancaria` char(5) NOT NULL,
+  `Numero_Cuenta` varchar(45) NOT NULL,
+  `Monto` double NOT NULL,
+  `idtipo_cuenta` char(5) NOT NULL,
+  PRIMARY KEY (`IdCuentaBancaria`),
+  UNIQUE KEY `Numero_Cuenta_UNIQUE` (`Numero_Cuenta`),
+  KEY `fk_cuenta_bancaria_tipo_cuenta1` (`idtipo_cuenta`),
+  CONSTRAINT `fk_cuenta_bancaria_tipo_cuenta1` FOREIGN KEY (`idtipo_cuenta`) REFERENCES `tipo_cuenta` (`idtipo_cuenta`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cuenta_bancaria`
+--
+
+LOCK TABLES `cuenta_bancaria` WRITE;
+/*!40000 ALTER TABLE `cuenta_bancaria` DISABLE KEYS */;
+INSERT INTO `cuenta_bancaria` VALUES ('CB001','570-19653197-0-67',1875.54,'TC001'),('CB002','570-19653197-0-68',249189.26,'TC001');
+/*!40000 ALTER TABLE `cuenta_bancaria` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tipo_cuenta`
+--
+
+DROP TABLE IF EXISTS `tipo_cuenta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tipo_cuenta` (
+  `idtipo_cuenta` char(5) NOT NULL,
+  `Descripcion` varchar(45) NOT NULL,
+  PRIMARY KEY (`idtipo_cuenta`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tipo_cuenta`
+--
+
+LOCK TABLES `tipo_cuenta` WRITE;
+/*!40000 ALTER TABLE `tipo_cuenta` DISABLE KEYS */;
+INSERT INTO `tipo_cuenta` VALUES ('TC001','Ahorros'),('TC002','Premium');
+/*!40000 ALTER TABLE `tipo_cuenta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cliente`
+--
+
+DROP TABLE IF EXISTS `cliente`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cliente` (
+  `IdCliente` char(5) NOT NULL,
+  `Nombres` varchar(50) NOT NULL,
+  `Apellidos` varchar(50) NOT NULL,
+  `DNI` char(8) NOT NULL,
+  `Telefono` varchar(45) NOT NULL,
+  `Direccion` varchar(45) NOT NULL,
+  `IdTipoCliente` char(5) NOT NULL,
+  PRIMARY KEY (`IdCliente`),
+  KEY `fk_cliente_tipo_cliente` (`IdTipoCliente`),
+  CONSTRAINT `fk_cliente_tipo_cliente` FOREIGN KEY (`IdTipoCliente`) REFERENCES `tipo_cliente` (`IdTipoCliente`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cliente`
+--
+
+LOCK TABLES `cliente` WRITE;
+/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
+INSERT INTO `cliente` VALUES ('C0001','Carlos','Medina Silvestre','47641184','948703839','La Esperanza','TC004'),('C0002','Abel','Contreras Arteaga','12345678','965125478','Ls Granados','TC002'),('C0003','Martin','Cabrera Sanchez','56458785','456848548','El Porvenir','TC003');
+/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'mydb'
+--
+/*!50003 DROP PROCEDURE IF EXISTS `sp_cambiar_clave` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`root`@`localhost`*/ /*!50003 PROCEDURE `sp_cambiar_clave`(
+_cliente char(5),
+_clave varchar(50)
+)
+BEGIN
+update usuario set
+Clave = rtrim(_clave)
+where IdCliente=_cliente;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_generar_clave` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`root`@`localhost`*/ /*!50003 PROCEDURE `sp_generar_clave`(
+_tarjeta char(16),
+_clave char(6)
+)
+BEGIN
+declare next_cod int;
+declare codigo char(5);
+declare codtarjeta char(5);
+declare codcliente char(5);
+
+set next_cod=(select COUNT(IdUsuario) from Usuario); 
+
+if(next_cod < 9) then 
+			 set codigo= concat('U000',next_cod+1);
+
+elseif(next_cod >=9 and next_cod <99) then
+    	 set codigo= concat('U00',next_cod+1);
+
+elseif(next_cod >=99 and next_cod <999) then
+			 set codigo= concat('U0',next_cod+1);
+end if;
+
+set codcliente=(select idcliente from tarjeta where numero_tarjeta=_tarjeta);
+set codtarjeta=(select idtarjeta from tarjeta where numero_tarjeta=_tarjeta);
+
+
+insert into usuario values(codigo,rtrim(_tarjeta),rtrim(_clave),codtarjeta,codcliente);
+
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_obtener_tarjeta` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`root`@`localhost`*/ /*!50003 PROCEDURE `sp_obtener_tarjeta`(
+_tarjeta char(16)
+)
+BEGIN
+select idtarjeta from tarjeta where Num_Tarjeta=rtrim(_tarjeta);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_realizar_operacion` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`root`@`localhost`*/ /*!50003 PROCEDURE `sp_realizar_operacion`(
+_monto double,
+_tipo varchar(50),
+_servicio varchar(50),
+_cuenta varchar(50),
+_cliente char(5),
+_ctabancaria char(5)
+)
+BEGIN
+declare next_cod int;
+declare codigo char(5);
+declare total double;
+
+set total=(select monto from cuenta_bancaria where idcuentabancaria=_ctabancaria);
+
+set next_cod=(select COUNT(IdOperacionBancaria) from operacion_bancaria); 
+
+if(next_cod < 9) then 
+			 set codigo= concat('OB00',next_cod+1);
+
+elseif(next_cod >=9 and next_cod <99) then
+    	 set codigo= concat('OB0',next_cod+1);
+
+elseif(next_cod >=99 and next_cod <999) then
+			 set codigo= concat('OB',next_cod+1);
+end if;
+
+insert into operacion_bancaria values(codigo,curdate(),_monto,rtrim(_tipo),rtrim(_servicio),rtrim(_cuenta),rtrim(_cliente),rtrim(_ctabancaria));
+
+update cuenta_bancaria
+set Monto=total-_monto
+where idcuentabancaria=_ctabancaria;
+
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_validar_claves` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`root`@`localhost`*/ /*!50003 PROCEDURE `sp_validar_claves`(
+_clave1 char(4),
+_clave2 char(6)
+)
+BEGIN
+select t.idcuentabancaria from tarjeta t,usuario u
+where t.idtarjeta=u.idtarjeta and t.clave_tarjeta=_clave1;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `sp_validar_usuario` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50020 DEFINER=`root`@`localhost`*/ /*!50003 PROCEDURE `sp_validar_usuario`(
+_tarjeta char(16),
+_clave char(6)
+)
+BEGIN
+select concat(c.nombres,' ',c.apellidos) as Cliente,t.Numero_Tarjeta as 'Numero de Tarjeta',cb.numero_cuenta as 'Numero de Cuenta',c.idcliente,cb.idcuentabancaria,t.idtarjeta
+from cliente c,cuenta_bancaria cb,usuario u,tarjeta t
+where t.IdCuentaBancaria=cb.IdCuentaBancaria and u.IdTarjeta=t.IdTarjeta and u.IdCliente=c.IdCliente
+and u.Numero_Tarjeta=_tarjeta and u.Clave=_clave;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2012-06-29 19:50:34
